@@ -1,0 +1,14 @@
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\bin\Debug\net8.0\MazeRunners.exe
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\bin\Debug\net8.0\MazeRunners.deps.json
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\bin\Debug\net8.0\MazeRunners.runtimeconfig.json
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\bin\Debug\net8.0\MazeRunners.dll
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\bin\Debug\net8.0\MazeRunners.pdb
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.GeneratedMSBuildEditorConfig.editorconfig
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.AssemblyInfoInputs.cache
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.AssemblyInfo.cs
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.csproj.CoreCompileInputs.cache
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.dll
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\refint\MazeRunners.dll
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.pdb
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.genruntimeconfig.cache
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\ref\MazeRunners.dll
