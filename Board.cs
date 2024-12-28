@@ -9,8 +9,6 @@ class Board
     {
         this.board = new Square [j, j];
         this.matriz = new bool [j, j];
-        matriz[0,0] = true;
-        matriz [j-1, j-1] = true;
     }
     public int filas {get{return matriz.GetLength(0);}}
     public int columnas {get{return matriz.GetLength(1);}}
@@ -68,12 +66,10 @@ class Board
     public void ConnectExit()
     {
         matriz [filas - 2, columnas - 1] = true;
-        matriz [filas - 1, columnas - 2] = true;
     }
     public void ConnectEnter()
     {
         matriz [1, 0] = true;
-        matriz [0, 1] = true;
     }
     public void FillSquare()
     {

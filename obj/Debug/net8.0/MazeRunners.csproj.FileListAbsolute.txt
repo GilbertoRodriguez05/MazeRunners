@@ -12,3 +12,4 @@ D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\refint\Maz
 D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.pdb
 D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.genruntimeconfig.cache
 D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\ref\MazeRunners.dll
+D:\Universidad\Pro Gilbe\Primer Proyecto\MazeRunners\obj\Debug\net8.0\MazeRunners.sourcelink.json

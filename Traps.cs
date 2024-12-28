@@ -1,4 +1,4 @@
 class Traps: Square
 {
-
+    
 }
