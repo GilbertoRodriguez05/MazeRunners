@@ -5,6 +5,7 @@ class Player
     public Factions factions;
     public string Name;
     public Turn turn;
+    public bool TurnActive = false;
     public Player(string Name, Turn turn, Factions factions)
     {
         this.Name = Name;
