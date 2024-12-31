@@ -6,13 +6,17 @@ class Player
     public string Name;
     public Turn turn;
     public bool TurnActive = false;
-    public Player(string Name, Turn turn, Factions factions)
+    public Board board = new Board(15);
+
+    public Player(string Name, Turn turn, Factions factions, Board board)
     {
         this.Name = Name;
         this.turn = turn;
         this.Select = new List<Token>{};
         this.Selected = new List<Token>{};
         this.factions = factions;
+        this.board = board;
+        board.GenMatrix();
         GetTokens(factions);
     }
 

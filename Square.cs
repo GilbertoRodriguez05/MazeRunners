@@ -1,6 +1,10 @@
 class Square
 {
-
+    SquareTypes squareTypes;
+public Square()
+{
+    
+}
 }
 
 enum SquareTypes

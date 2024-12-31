@@ -1,6 +1,9 @@
+using System.IO.Compression;
+
 class GameManager
 {
-    List<Player> players = new List<Player>();
+    Board map = new Board (31);
+    List<Player> players = new List<Player> ();
     public void StartGame()
     {
         Console.BackgroundColor = ConsoleColor.Black;
@@ -13,30 +16,6 @@ class GameManager
 
         List<Factions> factions = new List<Factions>{Factions.Fire, Factions.Water, Factions.Wind, Factions.Earth};
         List<string> factionsName = new List<string> { ". Fuego", ". Agua", ". Aire", ". Tierra" };
-        // List<string> FireTokens = new List<string> {". Nombre: FastFlame      | Velocidad: 1  | Cooldown: 3  | Poder: Aumenta su velocidad", 
-        //                                             ". Nombre: FireExplosion  | Velocidad: 2  | Cooldown: 5  | Poder: Puede atravesar un obstaculo", 
-        //                                             ". Nombre: RebornPhoenix  | Velocidad: 3  | Cooldown: 4  | Poder: Se hace inmune a las trampas", 
-        //                                             ". Nombre: ScorchingHeat  | Velocidad: 2  | Cooldown: 3  | Poder: Salta el turno del proximo jugador", 
-        //                                             ". Nombre: BurningFury    | Velocidad: 2  | Cooldown: 3  | Poder: Disminuye 1 punto la velocidad del proximo jugador", 
-        //                                             ". Nombre: HellFire       | Velocidad: 3  | Cooldown: 2  | Poder: Aumenta 1 turno el cooldown del proximo jugador"};
-        // List<string> WaterTokens = new List<string>{". Nombre: PropellingGeyser  | Velocidad: 1  | Cooldown: 3  | Poder: Aumenta su velocidad", 
-        //                                             ". Nombre: FlowingStream     | Velocidad: 2  | Cooldown: 5  | Poder: Puede atravesar un obstaculo", 
-        //                                             ". Nombre: HealingRain       | Velocidad: 3  | Cooldown: 4  | Poder: Se hace inmune a las trampas", 
-        //                                             ". Nombre: SlipperyIce       | Velocidad: 2  | Cooldown: 3  | Poder: Salta el turno del proximo jugador", 
-        //                                             ". Nombre: FrostBreeze       | Velocidad: 2  | Cooldown: 3  | Poder: Disminuye 1 pto la velocidad del proximo jugador", 
-        //                                             ". Nombre: Tsunami           | Velocidad: 3  | Cooldown: 2  | Poder: Aumenta 1 turno el cooldown del proximo jugador"};
-        // List<string> WindTokens = new List<string> {". Nombre: GustWind     | Velocidad: 1   | Cooldown: 3  | Poder: Aumenta su velocidad", 
-        //                                             ". Nombre: Typhoon      | Velocidad: 2   | Cooldown: 5  | Poder: Puede atravesar un obstaculo", 
-        //                                             ". Nombre: WindWhisper  | Velocidad: 3   | Cooldown: 4  | Poder: Se hace inmune a las trampas", 
-        //                                             ". Nombre: Tornado      | Velocidad: 2   | Cooldown: 3  | Poder: Salta el turno del proximo jugador", 
-        //                                             ". Nombre: Cyclon       | Velocidad: 2   | Cooldown: 3  | Poder: Disminuye 1 pto la velocidad del proximo jugador", 
-        //                                             ". Nombre: Storm        | Velocidad: 3   | Cooldown: 2  | Poder: Aumenta 1 turno el cooldown del proximo jugador"};
-        // List<string> EarthTokens = new List<string>{". Nombre: SwiftCreeper    | Velocidad: 1  | Cooldown: 3  | Poder: Aumenta su velocidad", 
-        //                                             ". Nombre: EarthQauke      | Velocidad: 2  | Cooldown: 5  | Poder: Puede atravesar un obstaculo", 
-        //                                             ". Nombre: HealingNature   | Velocidad: 3  | Cooldown: 4  | Poder: Se hace inmune a las trampas", 
-        //                                             ". Nombre: StoneFist       | Velocidad: 2  | Cooldown: 3  | Poder: Salta el turno del proximo jugador", 
-        //                                             ". Nombre: QuickSand       | Velocidad: 2  | Cooldown: 3  | Poder: Disminuye 1 pto la velocidad del proximo jugador", 
-        //                                             ". Nombre: EarthShake      | Velocidad: 3  | Cooldown: 2  | Poder: Aumenta 1 turno el cooldown del proximo jugador"};
         Turn[] turnos = (Turn[])Enum.GetValues(typeof(Turn));
 
         int jugadores = 0;
@@ -56,7 +35,7 @@ class GameManager
                     System.Console.WriteLine(i + factionsName[i]);
                 }
                 int factionNum = Convert.ToInt32(System.Console.ReadLine());
-                players.Add(new Player(name, turnos[players.Count], factions[factionNum]));
+                players.Add(new Player(name, turnos[players.Count], factions[factionNum], new Board(31)));
                 
                 factionsName.RemoveAt(factionNum);
                 factions.RemoveAt(factionNum);
@@ -205,7 +184,6 @@ class GameManager
             jugadores++;
         }
     }
-    
     public void PassTurn(int index)
     {
         players [index].TurnActive = false;
@@ -218,19 +196,23 @@ class GameManager
             players [index + 1].TurnActive = true;
         }
     }
-    public void Play(Board map)
+    public void Play()
     {
         while (true)
         {
+            DecreaseCooldown(players);
             bool SlowDown = false;
+            bool IncreaseCooldown = false;
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].TurnActive == true)
                 {
-                    System.Console.WriteLine("Seleccione la ficha que desea mover");
+                    Console.Clear();
+                    PrintToken(players, i);
+                    System.Console.WriteLine(players[i].Name + " Seleccione la ficha que desea mover");
                     for (int j = 0; j < players[i].Selected.Count; j++)
                     {
-                        System.Console.WriteLine(players[i].Selected [j].ToString());
+                        System.Console.WriteLine(j + " " + players[i].Selected [j].ToString());
                     }
                     int n = int.Parse(Console.ReadLine()??string.Empty);
                     Token FichaActual = players[i].Selected[n];
@@ -240,16 +222,22 @@ class GameManager
                         FichaActual.Speed -= 1;
                     }
                     SlowDown = false;
-                    ConsoleKeyInfo tecla = Console.ReadKey(true);
-                    if (tecla.Key == ConsoleKey.P)
+                    if (IncreaseCooldown)
                     {
+                        FichaActual.CooldownActive += 1;
+                    }
+                    IncreaseCooldown = false;
+                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    if (tecla.Key == ConsoleKey.P && FichaActual.CooldownActive == 0)
+                    {
+                        FichaActual.CooldownActive = FichaActual.Cooldown;
                         if (FichaActual.powers == PowersBank.Powers.SpeedPower)
                         {
                             PowersBank.SpeedPower(FichaActual);
                         }
                         else if (FichaActual.powers == PowersBank.Powers.GetThroughObstacles)
                         {
-                            PowersBank.GetThroughObstacles(FichaActual, map);
+                            PowersBank.GetThroughObstacles(FichaActual, players[i]);
                             PassTurn(i);
                             continue;
                         }
@@ -260,7 +248,14 @@ class GameManager
                         else if (FichaActual.powers == PowersBank.Powers.SkipTurn)
                         {
                             PassTurn(i);
-                            PassTurn(i + 1);
+                            if (i + 1 < players.Count)
+                            {
+                                PassTurn(i + 1);
+                            }
+                            else
+                            {
+                                PassTurn(0);
+                            }
                             continue;
                         }
                         else if (FichaActual.powers == PowersBank.Powers.SlowDown)
@@ -271,42 +266,150 @@ class GameManager
                         else if (FichaActual.powers == PowersBank.Powers.IncreaseCooldown)
                         {
                             PowersBank.IncreaseCooldown(FichaActual);
+                            IncreaseCooldown = true;
                         }
                     }
                     int vel = 0;
                     while (vel <= FichaActual.Speed)
                     {
-                        if (tecla.Key == ConsoleKey.UpArrow && map.matriz[FichaActual.PosFil - 1, FichaActual.PosCol])
+                        tecla = Console.ReadKey(true);
+                        Console.Clear();
+                        if (tecla.Key == ConsoleKey.UpArrow && players[i].board.matriz[FichaActual.PosFil - 1, FichaActual.PosCol])
                         {
                             FichaActual.PosFil += -1;
+                            
                         }
-                        else if (tecla.Key == ConsoleKey.DownArrow && map.matriz[FichaActual.PosFil + 1, FichaActual.PosCol])
+                        else if (tecla.Key == ConsoleKey.DownArrow && players[i].board.matriz[FichaActual.PosFil + 1, FichaActual.PosCol])
                         {
                            FichaActual.PosFil += 1;
                         }
-                        else if (tecla.Key == ConsoleKey.RightArrow && map.matriz[FichaActual.PosFil, FichaActual.PosCol + 1])
+                        else if (tecla.Key == ConsoleKey.RightArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol + 1])
                         {
                             FichaActual.PosCol += 1;
                         }
-                        else if (tecla.Key == ConsoleKey.LeftArrow && map.matriz[FichaActual.PosFil, FichaActual.PosCol - 1])
+                        else if (tecla.Key == ConsoleKey.LeftArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol - 1])
                         {
                            FichaActual.PosCol += -1;
                         }
+                        if (players[i].board.board[FichaActual.PosFil, FichaActual.PosCol] is Traps traps && traps.IsActive)
+                        {
+                            if (traps.trapstypes == TrapsTypes.MissTurn)
+                            {
+                                traps.IsActive = false;
+                                System.Console.WriteLine("Has Caido en una trampa y has perdido el turno");
+                                break;
+                            }
+                            else if (traps.trapstypes == TrapsTypes.BackToStart)
+                            {
+                                FichaActual.PosFil = 1;
+                                FichaActual.PosCol = 1;
+                                traps.IsActive = false;
+                                System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
+                                break;
+                            }
+                            else if (traps.trapstypes == TrapsTypes.ResetCooldown)
+                            {
+                                FichaActual.CooldownActive = FichaActual.Cooldown;
+                                traps.IsActive = false;
+                                System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
+                            }
+                            else if (traps.trapstypes == TrapsTypes.GetSlow)
+                            {
+                                FichaActual.Speed = 1;
+                                traps.IsActive = false;
+                                System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
+                            }
+                        }
+                        PrintToken(players, i);
                         vel ++;
                     }
                     if (FichaActual.powers == PowersBank.Powers.SpeedPower && FichaActual.PowerActive)
                     {
                         FichaActual.Speed -= 3;
                     }
+                    if (WinCondition(players[i]))
+                    {
+                        throw new Exception ($"Ha ganado el jugador {players[i].Name}");
+                    }
                     FichaActual.Speed = Speed;
                     FichaActual.PowerActive = false;
+                    //if(tecla.Key == )
                     PassTurn(i);
                 }
             }
         }
     }
-    public void GetPower(Token token)
+    public void DecreaseCooldown(List<Player> players)
     {
-       
+       for (int i = 0; i < players.Count; i++)
+       {
+            for (int j = 0; j < 3; j++)
+            {
+                players[i].Selected[j].CooldownActive -= 1;
+            }
+       }
+    }
+   
+    public bool WinCondition(Player player)
+    {
+        bool Win = false;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (player.Selected[i].PosFil == player.board.filas - 2 && player.Selected[i].PosCol == player.board.columnas - 2)
+            {
+                Win = true;
+            }
+            else
+            {
+                Win = false;
+            }
+        }
+        return Win;
+    }
+    public void PrintToken(List<Player> players, int i)
+    {
+        for (int a = 0; a < players[i].board.filas; a++)
+        {
+            for (int b = 0; b < players[i].board.columnas; b++)
+            {
+                if (players[i].Selected[0].PosFil == a && players[i].Selected[1].PosFil == a && players[i].Selected[2].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[1].PosCol == b && players[i].Selected[2].PosCol == b)
+                {
+                    System.Console.Write(" 3");
+                }
+                else if (players[i].Selected[0].PosFil == a && players [i].Selected[1].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[1].PosCol == b)
+                {
+                    System.Console.Write(" 2");
+                }
+                else if (players[i].Selected[0].PosFil == a && players [i].Selected[2].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[2].PosCol == b)
+                {
+                    System.Console.Write(" 2");
+                }
+                else if (players[i].Selected[1].PosFil == a && players [i].Selected[2].PosFil == a && players[i].Selected[1].PosCol == b && players[i].Selected[2].PosCol == b)
+                {
+                    System.Console.Write(" 2");
+                } 
+                else if (players[i].Selected[0].PosFil == a && players[i].Selected[0].PosCol == b)
+                {
+                    System.Console.Write(" a");
+                }
+                else if (players[i].Selected[1].PosFil == a && players[i].Selected[1].PosCol == b)
+                {
+                    System.Console.Write(" b");
+                }
+                else if (players[i].Selected[2].PosFil == a && players[i].Selected[2].PosCol == b)
+                {
+                    System.Console.Write(" c");
+                }
+                else if (players[i].board.matriz [a, b])
+                {
+                    System.Console.Write("  ");
+                }
+                else
+                {
+                    System.Console.Write("██");
+                }
+            }
+            System.Console.WriteLine();
+        }
     }
 }

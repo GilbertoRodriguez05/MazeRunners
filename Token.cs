@@ -1,18 +1,19 @@
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 
 class Token
 {
-    
     public string Name;
     public string Info;
     public Factions Faction;
     public int Speed;
     public int Cooldown;
+    public int CooldownActive;
     public bool PowerActive;
     public PowersBank.Powers powers;
     public int PosFil = 1;
     public int PosCol = 1;
-    public Token (string Name, string Info, Factions Faction, int Speed, int Cooldown,PowersBank.Powers powers, bool PowerActive)
+    public Token (string Name, string Info, Factions Faction, int Speed, int Cooldown, PowersBank.Powers powers, bool PowerActive)
     {
         this.Name = Name;
         this.Info = Info;
@@ -21,6 +22,7 @@ class Token
         this.Cooldown = Cooldown;
         this.powers = powers;
         this.PowerActive = PowerActive;
+        this.CooldownActive = Cooldown;
     }
 
     public override string ToString()

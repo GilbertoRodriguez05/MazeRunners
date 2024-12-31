@@ -48,6 +48,7 @@ class Board
         ConnectEnter();
         ConnectExit();
         FillSquare();
+        GenTraps();
     }
     private void GenMatrix(int a, int b)
     {
@@ -87,6 +88,46 @@ class Board
                 }            
             }
         }
+    }
+    public void GenTraps()
+    {
+        int TrapsCount = 6;
+        while(TrapsCount > 0)
+        {
+            int RandomCount = 0;
+            List<TrapsTypes> RandomList = RandomTraps();
+            while (RandomCount < RandomList.Count)
+            {
+                int i = rand.Next(filas - 1);
+                int j = rand.Next(columnas - 1);
+                if (i == 1 && j == 1)
+                {
+                    continue;
+                }
+                if (matriz[i, j])
+                {
+                    board[i, j] = new Traps(RandomList[RandomCount], true);
+                    RandomCount ++;
+                    TrapsCount --;
+                }
+                if (TrapsCount == 0)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    public List<TrapsTypes> RandomTraps()
+    {
+        List<TrapsTypes> types = [TrapsTypes.MissTurn, TrapsTypes.BackToStart, TrapsTypes.GetSlow, TrapsTypes.ResetCooldown];
+        for (int i = types.Count - 1; i >= 0 ; i--)
+        {
+            int k = rand.Next(i + 1);
+            TrapsTypes temp = types[k];
+            types[k] = types[i];
+            types[i] = temp;
+        }
+        return types;
     }
 }
 
