@@ -1,8 +1,9 @@
+using System.Collections.Concurrent;
 using System.IO.Compression;
+using System.Net.WebSockets;
 
 class GameManager
 {
-    Board map = new Board (31);
     List<Player> players = new List<Player> ();
     public void StartGame()
     {
@@ -29,13 +30,21 @@ class GameManager
             }
             else
             {
-                System.Console.WriteLine("Seleccione el numero de la faccion deseada: ");
-                for (int i = 0; i < factionsName.Count; i++)
+                int factionNum;
+                while (true)
                 {
-                    System.Console.WriteLine(i + factionsName[i]);
+                    System.Console.WriteLine("Seleccione el numero de la faccion deseada: ");
+                    for (int i = 0; i < factionsName.Count; i++)
+                    {
+                        System.Console.WriteLine(i + factionsName[i]);
+                    }
+                    factionNum = Convert.ToInt32(System.Console.ReadLine());
+                    if(factionNum < factions.Count && factionNum >= 0)
+                    {
+                        break;
+                    }
                 }
-                int factionNum = Convert.ToInt32(System.Console.ReadLine());
-                players.Add(new Player(name, turnos[players.Count], factions[factionNum], new Board(31)));
+                players.Add(new Player(name, turnos[players.Count], factions[factionNum], new Board(15)));
                 
                 factionsName.RemoveAt(factionNum);
                 factions.RemoveAt(factionNum);
@@ -60,6 +69,10 @@ class GameManager
                         }
                         Console.ResetColor();
                         int n = int.Parse(Console.ReadLine()??string.Empty);
+                        if (n < 0 || n > TokenBank.Fire.Count - 1)
+                        {
+                            continue;
+                        }
                         if (numFichas.Contains(n))
                         {
                             Console.Clear();
@@ -94,6 +107,10 @@ class GameManager
                         }
                         Console.ResetColor();
                         int n = int.Parse(Console.ReadLine()??string.Empty);
+                        if (n < 0 || n > TokenBank.Water.Count - 1)
+                        {
+                            continue;
+                        }
                         if (numFichas.Contains(n))
                         {
                             Console.Clear();
@@ -128,6 +145,10 @@ class GameManager
                         }
                         Console.ResetColor();
                         int n = int.Parse(Console.ReadLine()??string.Empty);
+                        if (n < 0 || n > TokenBank.Wind.Count - 1)
+                        {
+                            continue;
+                        }
                         if (numFichas.Contains(n))
                         {
                             Console.Clear();
@@ -152,7 +173,7 @@ class GameManager
 
                     while (fichas < 3)
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.ForegroundColor = ConsoleColor.Green;
                         for (int i = 0; i < TokenBank.Earth.Count; i++)
                         {
                             if(!numFichas.Contains(i))
@@ -162,6 +183,10 @@ class GameManager
                         }
                         Console.ResetColor();
                         int n = int.Parse(Console.ReadLine()??string.Empty);
+                        if (n < 0 || n > TokenBank.Earth.Count - 1)
+                        {
+                            continue;
+                        }
                         if (numFichas.Contains(n))
                         {
                             Console.Clear();
@@ -205,16 +230,34 @@ class GameManager
             bool IncreaseCooldown = false;
             for (int i = 0; i < players.Count; i++)
             {
-                if (players[i].TurnActive == true)
+                if (players[i].TurnActive == true && !players[i].PassTurn)
                 {
                     Console.Clear();
                     PrintToken(players, i);
-                    System.Console.WriteLine(players[i].Name + " Seleccione la ficha que desea mover");
-                    for (int j = 0; j < players[i].Selected.Count; j++)
+                    if (IncreaseCooldown)
                     {
-                        System.Console.WriteLine(j + " " + players[i].Selected [j].ToString());
+                        for (int j = 0; j < 3; j++)
+                        {
+                            players[i].Selected[j].CooldownActive ++;
+                        }
                     }
-                    int n = int.Parse(Console.ReadLine()??string.Empty);
+                    IncreaseCooldown = false;
+                    int n;
+                    while (true)
+                    {
+                        System.Console.WriteLine(players[i].Name + " seleccione la ficha que desea mover");
+                        for (int j = 0; j < players[i].Selected.Count; j++)
+                        {
+                            TokenColor(players[i]);
+                            System.Console.WriteLine(j + " " + players[i].Selected [j].ToString());
+                            Console.ResetColor();
+                        }
+                        n = int.Parse(Console.ReadLine()??string.Empty);
+                        if (n >= 0 && n < players[i].Selected.Count)
+                        {
+                            break;
+                        }
+                    }
                     Token FichaActual = players[i].Selected[n];
                     int Speed = FichaActual.Speed;
                     if (SlowDown)
@@ -222,120 +265,169 @@ class GameManager
                         FichaActual.Speed -= 1;
                     }
                     SlowDown = false;
-                    if (IncreaseCooldown)
-                    {
-                        FichaActual.CooldownActive += 1;
-                    }
-                    IncreaseCooldown = false;
-                    ConsoleKeyInfo tecla = Console.ReadKey(true);
-                    if (tecla.Key == ConsoleKey.P && FichaActual.CooldownActive == 0)
-                    {
-                        FichaActual.CooldownActive = FichaActual.Cooldown;
-                        if (FichaActual.powers == PowersBank.Powers.SpeedPower)
-                        {
-                            PowersBank.SpeedPower(FichaActual);
-                        }
-                        else if (FichaActual.powers == PowersBank.Powers.GetThroughObstacles)
-                        {
-                            PowersBank.GetThroughObstacles(FichaActual, players[i]);
-                            PassTurn(i);
-                            continue;
-                        }
-                        else if(FichaActual.powers == PowersBank.Powers.InmuneTraps)
-                        {
-                            PowersBank.InmuneTraps(FichaActual);
-                        }
-                        else if (FichaActual.powers == PowersBank.Powers.SkipTurn)
-                        {
-                            PassTurn(i);
-                            if (i + 1 < players.Count)
-                            {
-                                PassTurn(i + 1);
-                            }
-                            else
-                            {
-                                PassTurn(0);
-                            }
-                            continue;
-                        }
-                        else if (FichaActual.powers == PowersBank.Powers.SlowDown)
-                        {
-                            PowersBank.SlowDown(FichaActual);
-                            SlowDown = true;
-                        }
-                        else if (FichaActual.powers == PowersBank.Powers.IncreaseCooldown)
-                        {
-                            PowersBank.IncreaseCooldown(FichaActual);
-                            IncreaseCooldown = true;
-                        }
-                    }
-                    int vel = 0;
+                    
+                    int vel = 1;
                     while (vel <= FichaActual.Speed)
                     {
-                        tecla = Console.ReadKey(true);
+                        if (WinCondition(players[i]))
+                        {
+                            System.Console.WriteLine($"Ha ganado el jugador {players[i].Name}");
+                            return;
+                        }
+                        ConsoleKeyInfo tecla = Console.ReadKey(true);
                         Console.Clear();
+                        if(FichaActual.PosCol == players[i].board.columnas-2 && FichaActual.PosFil == players[i].board.filas-2)
+                        {
+                            System.Console.WriteLine("Esta ficha ya esta en la posicion final");
+                            Thread.Sleep(3000);
+                            break;
+                        }
+
+                        if (tecla.Key == ConsoleKey.P && FichaActual.CooldownActive == 0 && vel == 1)
+                        {
+                            System.Console.WriteLine("Activaste el poder");
+                            Thread.Sleep(1000);
+                            FichaActual.CooldownActive = FichaActual.Cooldown;
+                            if (FichaActual.powers == PowersBank.Powers.SpeedPower)
+                            {
+                                Console.Clear();
+                                PowersBank.SpeedPower(FichaActual);
+                            }
+                            else if (FichaActual.powers == PowersBank.Powers.GetThroughObstacles)
+                            {
+                                PrintToken(players, i);
+                                PowersBank.GetThroughObstacles(FichaActual, players[i]);
+                                PassTurn(i);
+                                break;
+                            }
+                            else if(FichaActual.powers == PowersBank.Powers.InmuneTraps)
+                            {
+                                Console.Clear();
+                                PowersBank.InmuneTraps(FichaActual);
+                            }
+                            else if (FichaActual.powers == PowersBank.Powers.SkipTurn)
+                            {
+                                if (i + 1 < players.Count)
+                                {
+                                    players[i+1].PassTurn = true;
+                                }
+                                else
+                                {
+                                    players[0].PassTurn = true;
+                                }
+                            }
+                            else if (FichaActual.powers == PowersBank.Powers.SlowDown)
+                            {
+                                Console.Clear();
+                                PowersBank.SlowDown(FichaActual);
+                                SlowDown = true;
+                            }
+                            else if (FichaActual.powers == PowersBank.Powers.IncreaseCooldown)
+                            {
+                                Console.Clear();
+                                PowersBank.IncreaseCooldown(FichaActual);
+                                IncreaseCooldown = true;
+                            }
+                        }
+                        
                         if (tecla.Key == ConsoleKey.UpArrow && players[i].board.matriz[FichaActual.PosFil - 1, FichaActual.PosCol])
                         {
                             FichaActual.PosFil += -1;
-                            
+                            vel ++;
                         }
                         else if (tecla.Key == ConsoleKey.DownArrow && players[i].board.matriz[FichaActual.PosFil + 1, FichaActual.PosCol])
                         {
                            FichaActual.PosFil += 1;
+                           vel ++;
                         }
                         else if (tecla.Key == ConsoleKey.RightArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol + 1])
                         {
                             FichaActual.PosCol += 1;
+                            vel ++;
+                        }
+                        else if (tecla.Key == ConsoleKey.LeftArrow && FichaActual.PosFil == 1 && FichaActual.PosCol == 0)
+                        {
+                            PrintToken(players, i);
+                            continue;
                         }
                         else if (tecla.Key == ConsoleKey.LeftArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol - 1])
                         {
                            FichaActual.PosCol += -1;
+                           vel ++;
                         }
                         if (players[i].board.board[FichaActual.PosFil, FichaActual.PosCol] is Traps traps && traps.IsActive)
                         {
                             if (traps.trapstypes == TrapsTypes.MissTurn)
                             {
                                 traps.IsActive = false;
-                                System.Console.WriteLine("Has Caido en una trampa y has perdido el turno");
-                                break;
+                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                {
+                                    System.Console.WriteLine("has caido en una trampa pero te has protegido");
+                                }
+                                else
+                                {
+                                    System.Console.WriteLine("Has Caido en una trampa y has perdido el turno");
+                                    Thread.Sleep(3000);
+                                    break;
+                                }
                             }
                             else if (traps.trapstypes == TrapsTypes.BackToStart)
                             {
-                                FichaActual.PosFil = 1;
-                                FichaActual.PosCol = 1;
                                 traps.IsActive = false;
-                                System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
-                                break;
+                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                {
+                                    System.Console.WriteLine("Has caido en una trampa pero te has protegido");
+                                }
+                                else
+                                {
+                                    FichaActual.PosFil = 1;
+                                    FichaActual.PosCol = 1;
+                                    System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
+                                    Thread.Sleep(3000);
+                                    break;
+                                }
                             }
                             else if (traps.trapstypes == TrapsTypes.ResetCooldown)
                             {
-                                FichaActual.CooldownActive = FichaActual.Cooldown;
                                 traps.IsActive = false;
-                                System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
+                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                {
+                                    System.Console.WriteLine("Has caido en una trampa pero te has protegido");
+                                }
+                                else
+                                {
+                                    FichaActual.CooldownActive = FichaActual.Cooldown;
+                                    System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
+                                    Thread.Sleep(3000);
+                                }
                             }
                             else if (traps.trapstypes == TrapsTypes.GetSlow)
                             {
-                                FichaActual.Speed = 1;
                                 traps.IsActive = false;
-                                System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
+                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                {
+                                    System.Console.WriteLine("Has caido en una trampa pero te has protegido");
+                                }
+                                else
+                                {
+                                    FichaActual.Speed = 1;
+                                    System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
+                                    Thread.Sleep(3000);
+                                }
                             }
                         }
                         PrintToken(players, i);
-                        vel ++;
                     }
                     if (FichaActual.powers == PowersBank.Powers.SpeedPower && FichaActual.PowerActive)
                     {
                         FichaActual.Speed -= 3;
                     }
-                    if (WinCondition(players[i]))
-                    {
-                        throw new Exception ($"Ha ganado el jugador {players[i].Name}");
-                    }
+                    
                     FichaActual.Speed = Speed;
                     FichaActual.PowerActive = false;
-                    //if(tecla.Key == )
-                    PassTurn(i);
                 }
+                PassTurn(i);
+                players[i].PassTurn = false;
             }
         }
     }
@@ -345,15 +437,17 @@ class GameManager
        {
             for (int j = 0; j < 3; j++)
             {
-                players[i].Selected[j].CooldownActive -= 1;
+                if (players[i].Selected[j].CooldownActive > 0)
+                {
+                    players[i].Selected[j].CooldownActive -= 1;
+                }
             }
        }
     }
-   
     public bool WinCondition(Player player)
     {
         bool Win = false;
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < 3; i++)
         {
             if (player.Selected[i].PosFil == player.board.filas - 2 && player.Selected[i].PosCol == player.board.columnas - 2)
             {
@@ -361,7 +455,7 @@ class GameManager
             }
             else
             {
-                Win = false;
+                return false;
             }
         }
         return Win;
@@ -410,6 +504,25 @@ class GameManager
                 }
             }
             System.Console.WriteLine();
+        }
+    }
+    public void TokenColor(Player player)
+    {
+        if (player.factions == Factions.Fire)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+        }
+        else if (player.factions == Factions.Earth)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
+        else if (player.factions == Factions.Water)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+        }
+        else if (player.factions == Factions.Wind)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
         }
     }
 }

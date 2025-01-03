@@ -16,91 +16,86 @@ class PowersBank
     }
     public static void GetThroughObstacles(Token token, Player player)
     {
-        token.PowerActive = true;
+        token.PowerActive = true;        
         ConsoleKeyInfo tecla = Console.ReadKey(true);
-        int vel = 0;
-        while (vel <= token.Speed)
+        for (int a = 0; a < player.board.filas; a++)
         {
-            Console.Clear();
-            for (int a = 0; a < player.board.filas; a++)
+            for (int b = 0; b < player.board.columnas; b++)
             {
-                for (int b = 0; b < player.board.columnas; b++)
+                for (int c = 0; c < player.Selected.Count; c++)
                 {
-                    for (int c = 0; c < player.Selected.Count; c++)
+                    if (player.Selected[c].PosFil == a && player.Selected[c].PosCol == b)
                     {
-                        if (player.Selected[c].PosFil == a && player.Selected[c].PosCol == b)
-                        {
-                            System.Console.WriteLine(c);
-                        }
-                        else if (player.board.matriz [a, b])
-                        {
-                            System.Console.WriteLine("  ");
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("██");
-                        }
+                        System.Console.Write(c);
+                    }
+                    else if (player.board.matriz [a, b])
+                    {
+                        System.Console.Write("  ");
+                    }
+                    else
+                    {
+                        System.Console.Write("██");
                     }
                 }
+                System.Console.WriteLine();
             }
-            if (tecla.Key == ConsoleKey.UpArrow)
+        }
+        if (tecla.Key == ConsoleKey.UpArrow)
+        {
+            if (token.PosFil - 1 > 0)
             {
-                if (token.PosFil - 1 > 0)
-                {
-                    token.PosFil += -1;
-                }
+                token.PosFil += -2;
             }
-            else if (tecla.Key == ConsoleKey.DownArrow )
+        }
+        else if (tecla.Key == ConsoleKey.DownArrow )
+        {
+           if (token.PosFil + 1 < player.board.filas)
+           {
+            token.PosFil += 2;
+           }
+        }
+        else if (tecla.Key == ConsoleKey.RightArrow )
+        {
+            if (token.PosCol + 1 < player.board.columnas)
             {
-               if (token.PosFil + 1 < player.board.filas)
-               {
-                token.PosFil += 1;
-               }
+                token.PosCol += 2;
             }
-            else if (tecla.Key == ConsoleKey.RightArrow )
+        }
+        else if (tecla.Key == ConsoleKey.LeftArrow )
+        {
+           if (token.PosCol - 1 > 0)
+           {
+            token.PosCol += -2;
+           }
+        }
+        if (player.board.board [token.PosFil, token.PosCol] is Traps traps && traps.IsActive)
+        {
+            if (traps.trapstypes == TrapsTypes.MissTurn)
             {
-                if (token.PosCol + 1 < player.board.columnas)
-                {
-                    token.PosCol += 1;
-                }
+                traps.IsActive = false;
+                System.Console.WriteLine("Has Caido en una trampa y has perdido el turno");
+                Thread.Sleep(3000);
             }
-            else if (tecla.Key == ConsoleKey.LeftArrow )
+            else if (traps.trapstypes == TrapsTypes.BackToStart)
             {
-               if (token.PosCol - 1 > 0)
-               {
-                token.PosCol += -1;
-               }
+                token.PosFil = 1;
+                token.PosCol = 1;
+                traps.IsActive = false;
+                System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
+                Thread.Sleep(3000);
             }
-            if (player.board.board [token.PosFil, token.PosCol] is Traps traps && traps.IsActive)
+            else if (traps.trapstypes == TrapsTypes.ResetCooldown)
             {
-                if (traps.trapstypes == TrapsTypes.MissTurn)
-                {
-                    traps.IsActive = false;
-                    System.Console.WriteLine("Has Caido en una trampa y has perdido el turno");
-                    break;
-                }
-                else if (traps.trapstypes == TrapsTypes.BackToStart)
-                {
-                    token.PosFil = 1;
-                    token.PosCol = 1;
-                    traps.IsActive = false;
-                    System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
-                    break;
-                }
-                else if (traps.trapstypes == TrapsTypes.ResetCooldown)
-                {
-                    token.CooldownActive = token.Cooldown;
-                    traps.IsActive = false;
-                    System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
-                }
-                else if (traps.trapstypes == TrapsTypes.GetSlow)
-                {
-                    token.Speed = 1;
-                    traps.IsActive = false;
-                    System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
-                }
+                token.CooldownActive = token.Cooldown;
+                traps.IsActive = false;
+                System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
             }
-            vel ++;
+            else if (traps.trapstypes == TrapsTypes.GetSlow)
+            {
+                token.Speed = 1;
+                traps.IsActive = false;
+                System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
+            }
         }
         token.PowerActive = false;
     }

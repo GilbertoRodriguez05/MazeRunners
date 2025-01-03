@@ -12,7 +12,7 @@ class Token
     public bool PowerActive;
     public PowersBank.Powers powers;
     public int PosFil = 1;
-    public int PosCol = 1;
+    public int PosCol = 0;
     public Token (string Name, string Info, Factions Faction, int Speed, int Cooldown, PowersBank.Powers powers, bool PowerActive)
     {
         this.Name = Name;
@@ -27,7 +27,7 @@ class Token
 
     public override string ToString()
     {
-        return "Nombre: " + Name + " | Velocidad: " + Speed + " | Cooldown: " + Cooldown + " | Poder: " +  Info;
+        return "Nombre: " + Name + " | Velocidad: " + Speed + " | Cooldown: " + CooldownActive + " | Poder: " +  Info;
     }
 }
 public enum Factions

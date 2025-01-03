@@ -5,8 +5,9 @@ class Player
     public Factions factions;
     public string Name;
     public Turn turn;
+    public bool PassTurn;
     public bool TurnActive = false;
-    public Board board = new Board(15);
+    public Board board = new Board(7);
 
     public Player(string Name, Turn turn, Factions factions, Board board)
     {
