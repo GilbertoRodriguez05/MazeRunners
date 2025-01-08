@@ -19,8 +19,8 @@ class GameManager
         List<string> factionsName = new List<string> { ". Fuego", ". Agua", ". Aire", ". Tierra" };
         Turn[] turnos = (Turn[])Enum.GetValues(typeof(Turn));
 
-        int jugadores = 0;
-        while(jugadores < 4)
+        int playersNum = 0;
+        while(playersNum < 4)
         {
             System.Console.WriteLine("Escriba el nombre del jugador");
             string name = System.Console.ReadLine()?? string.Empty;
@@ -30,6 +30,7 @@ class GameManager
             }
             else
             {
+                string faction;
                 int factionNum;
                 while (true)
                 {
@@ -38,7 +39,9 @@ class GameManager
                     {
                         System.Console.WriteLine(i + factionsName[i]);
                     }
-                    factionNum = Convert.ToInt32(System.Console.ReadLine());
+                    faction = System.Console.ReadLine()?? string.Empty;
+                    if(!IsNumeric(faction) || string.IsNullOrEmpty(faction)) continue;
+                    factionNum = Convert.ToInt32(faction);
                     if(factionNum < factions.Count && factionNum >= 0)
                     {
                         break;
@@ -52,161 +55,181 @@ class GameManager
                 System.Console.WriteLine("Seleccione una ficha");
                 Console.BackgroundColor = ConsoleColor.Black;
                 
-                if (players[jugadores].factions == Factions.Fire)
+                if (players[playersNum].factions == Factions.Fire)
                 {
-                    int fichas = 0;
-                    List<int> numFichas = new List<int>();
+                    int tokens = 0;
+                    List<int> TokenNum = new List<int>();
 
-                    while (fichas < 3)
+                    while (tokens < 3)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         for (int i = 0; i < TokenBank.Fire.Count; i++)
                         {
-                            if(!numFichas.Contains(i))
+                            if(!TokenNum.Contains(i))
                             {
                                 System.Console.WriteLine(i + ". " + TokenBank.Fire[i].ToString());
                             }
                         }
                         Console.ResetColor();
-                        int n = int.Parse(Console.ReadLine()??string.Empty);
+                        string s = Console.ReadLine()??string.Empty;
+                        if ( !IsNumeric(s) || string.IsNullOrEmpty(s))
+                        {
+                            continue;
+                        }
+                        int n = int.Parse(s);
                         if (n < 0 || n > TokenBank.Fire.Count - 1)
                         {
                             continue;
                         }
-                        if (numFichas.Contains(n))
+                        if (TokenNum.Contains(n))
                         {
                             Console.Clear();
                             System.Console.WriteLine("Seleccione una distinta");
                             continue;
                         }
-                        numFichas.Add(n);
+                        TokenNum.Add(n);
                         players[players.Count-1].Selected.Add(TokenBank.Fire[n]);
                         Console.Clear();
-                        if (fichas == 2)
+                        if (tokens == 2)
                         {
                             break;
                         }
                         System.Console.WriteLine("Seleccione otra");
-                        fichas ++;
+                        tokens ++;
                     }
                 }
-                else if (players[jugadores].factions == Factions.Water)
+                else if (players[playersNum].factions == Factions.Water)
                 {
-                    int fichas = 0;
-                    List<int> numFichas = new List<int>();
+                    int tokens = 0;
+                    List<int> TokenNum = new List<int>();
 
-                    while (fichas < 3)
+                    while (tokens < 3)
                     {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         for (int i = 0; i < TokenBank.Water.Count; i++)
                         {
-                            if(!numFichas.Contains(i))
+                            if(!TokenNum.Contains(i))
                             {
                                 System.Console.WriteLine(i + ". " + TokenBank.Water[i].ToString());
                             }
                         }
                         Console.ResetColor();
-                        int n = int.Parse(Console.ReadLine()??string.Empty);
+                        string s = Console.ReadLine()??string.Empty;
+                        if  (!IsNumeric(s) || string.IsNullOrEmpty(s))
+                        {
+                            continue;
+                        }
+                        int n = int.Parse(s);
                         if (n < 0 || n > TokenBank.Water.Count - 1)
                         {
                             continue;
                         }
-                        if (numFichas.Contains(n))
+                        if (TokenNum.Contains(n))
                         {
                             Console.Clear();
                             System.Console.WriteLine("Seleccione una distinta");
                             continue;
                         }
-                        numFichas.Add(n);
+                        TokenNum.Add(n);
                         players[players.Count-1].Selected.Add(TokenBank.Water[n]);
                         Console.Clear();
-                        if (fichas == 2)
+                        if (tokens == 2)
                         {
                             break;
                         }
                         System.Console.WriteLine("Seleccione otra");
-                        fichas ++;
+                        tokens ++;
                     }
                 }
-                else if (players[jugadores].factions == Factions.Wind)
+                else if (players[playersNum].factions == Factions.Wind)
                 {
-                    int fichas = 0;
-                    List<int> numFichas = new List<int>();
+                    int tokens = 0;
+                    List<int> TokenNum = new List<int>();
 
-                    while (fichas < 3)
+                    while (tokens < 3)
                     {
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         for (int i = 0; i < TokenBank.Wind.Count; i++)
                         {
-                            if(!numFichas.Contains(i))
+                            if(!TokenNum.Contains(i))
                             {
                                 System.Console.WriteLine(i + ". " + TokenBank.Wind[i].ToString());
                             }
                         }
                         Console.ResetColor();
-                        int n = int.Parse(Console.ReadLine()??string.Empty);
+                        string s = Console.ReadLine()??string.Empty;
+                        if (!IsNumeric(s) || string.IsNullOrEmpty(s))
+                        {
+                            continue;
+                        }
+                        int n = int.Parse(s);
                         if (n < 0 || n > TokenBank.Wind.Count - 1)
                         {
                             continue;
                         }
-                        if (numFichas.Contains(n))
+                        if (TokenNum.Contains(n))
                         {
                             Console.Clear();
                             System.Console.WriteLine("Seleccione una distinta");
                             continue;
                         }
-                        numFichas.Add(n);
+                        TokenNum.Add(n);
                         players[players.Count-1].Selected.Add(TokenBank.Wind[n]);
                         Console.Clear();
-                        if (fichas == 2)
+                        if (tokens == 2)
                         {
                             break;
                         }
                         System.Console.WriteLine("Seleccione otra");
-                        fichas ++;
+                        tokens ++;
                     }
                 }
-                else if (players[jugadores].factions == Factions.Earth)
+                else if (players[playersNum].factions == Factions.Earth)
                 {
-                    int fichas = 0;
-                    List<int> numFichas = new List<int>();
+                    int tokens = 0;
+                    List<int> TokenNum = new List<int>();
 
-                    while (fichas < 3)
+                    while (tokens < 3)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         for (int i = 0; i < TokenBank.Earth.Count; i++)
                         {
-                            if(!numFichas.Contains(i))
+                            if(!TokenNum.Contains(i))
                             {
                                 System.Console.WriteLine(i + ". "+TokenBank.Earth[i].ToString());
                             }
                         }
                         Console.ResetColor();
-                        int n = int.Parse(Console.ReadLine()??string.Empty);
+                        string s = Console.ReadLine()??string.Empty;
+                        if ( !IsNumeric(s) || string.IsNullOrEmpty(s))
+                        {
+                            continue;
+                        }
+                        int n = int.Parse(s);
                         if (n < 0 || n > TokenBank.Earth.Count - 1)
                         {
                             continue;
                         }
-                        if (numFichas.Contains(n))
+                        if (TokenNum.Contains(n))
                         {
                             Console.Clear();
                             System.Console.WriteLine("Seleccione una distinta");
                             continue;
                         }
-                        numFichas.Add(n);
+                        TokenNum.Add(n);
                         players[players.Count-1].Selected.Add(TokenBank.Earth[n]);
                         Console.Clear();
-                        if (fichas == 2)
+                        if (tokens == 2)
                         {
                             break;
                         }
                         System.Console.WriteLine("Seleccione otra");
-                        fichas ++;
+                        tokens ++;
                     }
                 }
             }
             players [0].TurnActive = true;
-            jugadores++;
+            playersNum++;
         }
     }
     public void PassTurn(int index)
@@ -223,11 +246,12 @@ class GameManager
     }
     public void Play()
     {
+        TokenIcon();
+        bool SlowDown = false;
+        bool IncreaseCooldown = false;
         while (true)
         {
             DecreaseCooldown(players);
-            bool SlowDown = false;
-            bool IncreaseCooldown = false;
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].TurnActive == true && !players[i].PassTurn)
@@ -240,8 +264,8 @@ class GameManager
                         {
                             players[i].Selected[j].CooldownActive ++;
                         }
+                        IncreaseCooldown = false;
                     }
-                    IncreaseCooldown = false;
                     int n;
                     while (true)
                     {
@@ -252,115 +276,120 @@ class GameManager
                             System.Console.WriteLine(j + " " + players[i].Selected [j].ToString());
                             Console.ResetColor();
                         }
-                        n = int.Parse(Console.ReadLine()??string.Empty);
+                        string s = Console.ReadLine()??string.Empty;
+                        if ( !IsNumeric(s) || string.IsNullOrEmpty(s))
+                        {
+                            continue;
+                        }
+                        n = int.Parse(s);
                         if (n >= 0 && n < players[i].Selected.Count)
                         {
                             break;
                         }
                     }
-                    Token FichaActual = players[i].Selected[n];
-                    int Speed = FichaActual.Speed;
+                    Token ActualToken = players[i].Selected[n];
+                    int Speed = ActualToken.Speed;
                     if (SlowDown)
                     {
-                        FichaActual.Speed -= 1;
+                        ActualToken.Speed -= 1;
+                        SlowDown = false;
                     }
-                    SlowDown = false;
                     
                     int vel = 1;
-                    while (vel <= FichaActual.Speed)
+                    while (vel <= ActualToken.Speed)
                     {
                         if (WinCondition(players[i]))
                         {
                             System.Console.WriteLine($"Ha ganado el jugador {players[i].Name}");
                             return;
                         }
-                        ConsoleKeyInfo tecla = Console.ReadKey(true);
+                        ConsoleKeyInfo key = Console.ReadKey(true);
                         Console.Clear();
-                        if(FichaActual.PosCol == players[i].board.columnas-2 && FichaActual.PosFil == players[i].board.filas-2)
+                        if (ActualToken.PosCol == players[i].board.columnas-2 && ActualToken.PosFil == players[i].board.filas-2)
                         {
                             System.Console.WriteLine("Esta ficha ya esta en la posicion final");
                             Thread.Sleep(3000);
                             break;
                         }
 
-                        if (tecla.Key == ConsoleKey.P && FichaActual.CooldownActive == 0 && vel == 1)
+                        if (key.Key == ConsoleKey.P && ActualToken.CooldownActive == 0 && vel == 1)
                         {
                             System.Console.WriteLine("Activaste el poder");
                             Thread.Sleep(1000);
-                            FichaActual.CooldownActive = FichaActual.Cooldown;
-                            if (FichaActual.powers == PowersBank.Powers.SpeedPower)
+                            ActualToken.CooldownActive = ActualToken.Cooldown;
+                            if (ActualToken.powers == PowersBank.Powers.SpeedPower)
                             {
                                 Console.Clear();
-                                PowersBank.SpeedPower(FichaActual);
+                                PowersBank.SpeedPower(ActualToken);
                             }
-                            else if (FichaActual.powers == PowersBank.Powers.GetThroughObstacles)
+                            else if (ActualToken.powers == PowersBank.Powers.GetThroughObstacles)
                             {
                                 PrintToken(players, i);
-                                PowersBank.GetThroughObstacles(FichaActual, players[i]);
+                                PowersBank.GetThroughObstacles(ActualToken, players[i]);
                                 PassTurn(i);
                                 break;
                             }
-                            else if(FichaActual.powers == PowersBank.Powers.InmuneTraps)
+                            else if(ActualToken.powers == PowersBank.Powers.InmuneTraps)
                             {
                                 Console.Clear();
-                                PowersBank.InmuneTraps(FichaActual);
+                                PowersBank.InmuneTraps(ActualToken);
                             }
-                            else if (FichaActual.powers == PowersBank.Powers.SkipTurn)
+                            else if (ActualToken.powers == PowersBank.Powers.SkipTurn)
                             {
                                 if (i + 1 < players.Count)
                                 {
-                                    players[i+1].PassTurn = true;
+                                    players[i + 1].PassTurn = true;
                                 }
                                 else
                                 {
                                     players[0].PassTurn = true;
                                 }
                             }
-                            else if (FichaActual.powers == PowersBank.Powers.SlowDown)
+                            else if (ActualToken.powers == PowersBank.Powers.SlowDown)
                             {
                                 Console.Clear();
-                                PowersBank.SlowDown(FichaActual);
+                                PowersBank.SlowDown(ActualToken);
                                 SlowDown = true;
                             }
-                            else if (FichaActual.powers == PowersBank.Powers.IncreaseCooldown)
+                            else if (ActualToken.powers == PowersBank.Powers.IncreaseCooldown)
                             {
                                 Console.Clear();
-                                PowersBank.IncreaseCooldown(FichaActual);
+                                PowersBank.IncreaseCooldown(ActualToken);
                                 IncreaseCooldown = true;
                             }
                         }
                         
-                        if (tecla.Key == ConsoleKey.UpArrow && players[i].board.matriz[FichaActual.PosFil - 1, FichaActual.PosCol])
+                        if (key.Key == ConsoleKey.UpArrow && players[i].board.matriz[ActualToken.PosFil - 1, ActualToken.PosCol])
                         {
-                            FichaActual.PosFil += -1;
+                            ActualToken.PosFil += -1;
                             vel ++;
                         }
-                        else if (tecla.Key == ConsoleKey.DownArrow && players[i].board.matriz[FichaActual.PosFil + 1, FichaActual.PosCol])
+                        else if (key.Key == ConsoleKey.DownArrow && players[i].board.matriz[ActualToken.PosFil + 1, ActualToken.PosCol])
                         {
-                           FichaActual.PosFil += 1;
+                           ActualToken.PosFil += 1;
                            vel ++;
                         }
-                        else if (tecla.Key == ConsoleKey.RightArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol + 1])
+                        else if (key.Key == ConsoleKey.RightArrow && players[i].board.matriz[ActualToken.PosFil, ActualToken.PosCol + 1])
                         {
-                            FichaActual.PosCol += 1;
+                            ActualToken.PosCol += 1;
                             vel ++;
                         }
-                        else if (tecla.Key == ConsoleKey.LeftArrow && FichaActual.PosFil == 1 && FichaActual.PosCol == 0)
+                        else if (key.Key == ConsoleKey.LeftArrow && ActualToken.PosFil == 1 && ActualToken.PosCol == 0)
                         {
                             PrintToken(players, i);
                             continue;
                         }
-                        else if (tecla.Key == ConsoleKey.LeftArrow && players[i].board.matriz[FichaActual.PosFil, FichaActual.PosCol - 1])
+                        else if (key.Key == ConsoleKey.LeftArrow && players[i].board.matriz[ActualToken.PosFil, ActualToken.PosCol - 1])
                         {
-                           FichaActual.PosCol += -1;
+                           ActualToken.PosCol += -1;
                            vel ++;
                         }
-                        if (players[i].board.board[FichaActual.PosFil, FichaActual.PosCol] is Traps traps && traps.IsActive)
+                        if (players[i].board.board[ActualToken.PosFil, ActualToken.PosCol] is Traps traps && traps.IsActive)
                         {
                             if (traps.trapstypes == TrapsTypes.MissTurn)
                             {
                                 traps.IsActive = false;
-                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                if (ActualToken.powers == PowersBank.Powers.InmuneTraps && ActualToken.PowerActive)
                                 {
                                     System.Console.WriteLine("has caido en una trampa pero te has protegido");
                                 }
@@ -374,14 +403,14 @@ class GameManager
                             else if (traps.trapstypes == TrapsTypes.BackToStart)
                             {
                                 traps.IsActive = false;
-                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                if (ActualToken.powers == PowersBank.Powers.InmuneTraps && ActualToken.PowerActive)
                                 {
                                     System.Console.WriteLine("Has caido en una trampa pero te has protegido");
                                 }
                                 else
                                 {
-                                    FichaActual.PosFil = 1;
-                                    FichaActual.PosCol = 1;
+                                    ActualToken.PosFil = 1;
+                                    ActualToken.PosCol = 1;
                                     System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
                                     Thread.Sleep(3000);
                                     break;
@@ -390,13 +419,13 @@ class GameManager
                             else if (traps.trapstypes == TrapsTypes.ResetCooldown)
                             {
                                 traps.IsActive = false;
-                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                if (ActualToken.powers == PowersBank.Powers.InmuneTraps && ActualToken.PowerActive)
                                 {
                                     System.Console.WriteLine("Has caido en una trampa pero te has protegido");
                                 }
                                 else
                                 {
-                                    FichaActual.CooldownActive = FichaActual.Cooldown;
+                                    ActualToken.CooldownActive = ActualToken.Cooldown;
                                     System.Console.WriteLine("Has caido en una trampa y tu cooldown ha sido reiniciado");
                                     Thread.Sleep(3000);
                                 }
@@ -404,13 +433,13 @@ class GameManager
                             else if (traps.trapstypes == TrapsTypes.GetSlow)
                             {
                                 traps.IsActive = false;
-                                if (FichaActual.powers == PowersBank.Powers.InmuneTraps && FichaActual.PowerActive)
+                                if (ActualToken.powers == PowersBank.Powers.InmuneTraps && ActualToken.PowerActive)
                                 {
                                     System.Console.WriteLine("Has caido en una trampa pero te has protegido");
                                 }
                                 else
                                 {
-                                    FichaActual.Speed = 1;
+                                    ActualToken.Speed = 1;
                                     System.Console.WriteLine("Has caido en una trampa y tu velicidad se ha reducido a 1");
                                     Thread.Sleep(3000);
                                 }
@@ -418,13 +447,13 @@ class GameManager
                         }
                         PrintToken(players, i);
                     }
-                    if (FichaActual.powers == PowersBank.Powers.SpeedPower && FichaActual.PowerActive)
+                    if (ActualToken.powers == PowersBank.Powers.SpeedPower && ActualToken.PowerActive)
                     {
-                        FichaActual.Speed -= 3;
+                        ActualToken.Speed -= 3;
                     }
                     
-                    FichaActual.Speed = Speed;
-                    FichaActual.PowerActive = false;
+                    ActualToken.Speed = Speed;
+                    ActualToken.PowerActive = false;
                 }
                 PassTurn(i);
                 players[i].PassTurn = false;
@@ -468,31 +497,31 @@ class GameManager
             {
                 if (players[i].Selected[0].PosFil == a && players[i].Selected[1].PosFil == a && players[i].Selected[2].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[1].PosCol == b && players[i].Selected[2].PosCol == b)
                 {
-                    System.Console.Write(" 3");
+                    System.Console.Write("3️⃣ ");
                 }
                 else if (players[i].Selected[0].PosFil == a && players [i].Selected[1].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[1].PosCol == b)
                 {
-                    System.Console.Write(" 2");
+                    System.Console.Write("2️⃣ ");
                 }
                 else if (players[i].Selected[0].PosFil == a && players [i].Selected[2].PosFil == a && players[i].Selected[0].PosCol == b && players[i].Selected[2].PosCol == b)
                 {
-                    System.Console.Write(" 2");
+                    System.Console.Write("2️⃣ ");
                 }
                 else if (players[i].Selected[1].PosFil == a && players [i].Selected[2].PosFil == a && players[i].Selected[1].PosCol == b && players[i].Selected[2].PosCol == b)
                 {
-                    System.Console.Write(" 2");
+                    System.Console.Write("2️⃣ ");
                 } 
                 else if (players[i].Selected[0].PosFil == a && players[i].Selected[0].PosCol == b)
                 {
-                    System.Console.Write(" a");
+                    System.Console.Write(players[i].Selected[0].Icon);
                 }
                 else if (players[i].Selected[1].PosFil == a && players[i].Selected[1].PosCol == b)
                 {
-                    System.Console.Write(" b");
+                    System.Console.Write(players[i].Selected[1].Icon);
                 }
                 else if (players[i].Selected[2].PosFil == a && players[i].Selected[2].PosCol == b)
                 {
-                    System.Console.Write(" c");
+                    System.Console.Write(players[i].Selected[2].Icon);
                 }
                 else if (players[i].board.matriz [a, b])
                 {
@@ -500,11 +529,13 @@ class GameManager
                 }
                 else
                 {
+                    TokenColor(players[i]);
                     System.Console.Write("██");
                 }
             }
             System.Console.WriteLine();
         }
+        Console.ResetColor();
     }
     public void TokenColor(Player player)
     {
@@ -524,5 +555,47 @@ class GameManager
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
         }
+    }
+    public void TokenIcon()
+    {
+       for (int i = 0; i < players.Count; i++)
+       {
+            if (players[i].factions == Factions.Fire)
+            {
+                players[i].Selected[0].Icon = "🔥";
+                players[i].Selected[1].Icon = "☄️ ";
+                players[i].Selected[2].Icon = "💥";
+            }
+            else if (players[i].factions == Factions.Water)
+            {
+                players[i].Selected[0].Icon = "💧";
+                players[i].Selected[1].Icon = "🌊";
+                players[i].Selected[2].Icon = "🫧";
+            }
+            else if (players[i].factions == Factions.Earth)
+            {
+                players[i].Selected[0].Icon = "🌴";
+                players[i].Selected[1].Icon = "🌵";
+                players[i].Selected[2].Icon = "🪵 ";
+            }
+            else if (players[i].factions == Factions.Wind)
+            {
+                players[i].Selected[0].Icon = "💨";
+                players[i].Selected[1].Icon = "🌪️";
+                players[i].Selected[2].Icon = "⚡️";
+            }
+       }
+    }
+    
+    static bool IsNumeric(string input)
+    {
+        foreach (char c in input)
+        {
+            if (!char.IsDigit(c))
+            {
+                return false; 
+            }
+        }
+        return true;
     }
 }

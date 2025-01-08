@@ -11,13 +11,13 @@ class PowersBank
     }
     public static void SpeedPower(Token token)
     {
-        token.Speed = 4;
+        token.Speed += 3;
         token.PowerActive = true;
     }
     public static void GetThroughObstacles(Token token, Player player)
     {
         token.PowerActive = true;        
-        ConsoleKeyInfo tecla = Console.ReadKey(true);
+        ConsoleKeyInfo key = Console.ReadKey(true);
         for (int a = 0; a < player.board.filas; a++)
         {
             for (int b = 0; b < player.board.columnas; b++)
@@ -40,28 +40,28 @@ class PowersBank
                 System.Console.WriteLine();
             }
         }
-        if (tecla.Key == ConsoleKey.UpArrow)
+        if (key.Key == ConsoleKey.UpArrow)
         {
             if (token.PosFil - 1 > 0)
             {
                 token.PosFil += -2;
             }
         }
-        else if (tecla.Key == ConsoleKey.DownArrow )
+        else if (key.Key == ConsoleKey.DownArrow )
         {
            if (token.PosFil + 1 < player.board.filas)
            {
             token.PosFil += 2;
            }
         }
-        else if (tecla.Key == ConsoleKey.RightArrow )
+        else if (key.Key == ConsoleKey.RightArrow )
         {
             if (token.PosCol + 1 < player.board.columnas)
             {
                 token.PosCol += 2;
             }
         }
-        else if (tecla.Key == ConsoleKey.LeftArrow )
+        else if (key.Key == ConsoleKey.LeftArrow )
         {
            if (token.PosCol - 1 > 0)
            {

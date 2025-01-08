@@ -5,6 +5,7 @@ class Token
 {
     public string Name;
     public string Info;
+    public string Icon = "";
     public Factions Faction;
     public int Speed;
     public int Cooldown;
@@ -27,7 +28,7 @@ class Token
 
     public override string ToString()
     {
-        return "Nombre: " + Name + " | Velocidad: " + Speed + " | Cooldown: " + CooldownActive + " | Poder: " +  Info;
+        return Icon + "  Nombre: " + Name + " | Velocidad: " + Speed + " | Cooldown: " + CooldownActive + " | Poder: " +  Info;
     }
 }
 public enum Factions
