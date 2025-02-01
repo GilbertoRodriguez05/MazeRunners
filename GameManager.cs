@@ -284,7 +284,14 @@ class GameManager
                         n = int.Parse(s);
                         if (n >= 0 && n < players[i].Selected.Count)
                         {
-                            break;
+                            if (players[i].Selected[n].PosCol == players[i].board.columnas-2 && players[i].Selected[n].PosFil == players[i].board.filas-2)
+                            {
+                                Console.Clear();
+                                System.Console.WriteLine("Esta ficha ya esta en la posicion final");
+                                Thread.Sleep(3000);
+                                continue;
+                            }
+                            else break;
                         }
                     }
                     Token ActualToken = players[i].Selected[n];
@@ -298,19 +305,9 @@ class GameManager
                     int vel = 1;
                     while (vel <= ActualToken.Speed)
                     {
-                        if (WinCondition(players[i]))
-                        {
-                            System.Console.WriteLine($"Ha ganado el jugador {players[i].Name}");
-                            return;
-                        }
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         Console.Clear();
-                        if (ActualToken.PosCol == players[i].board.columnas-2 && ActualToken.PosFil == players[i].board.filas-2)
-                        {
-                            System.Console.WriteLine("Esta ficha ya esta en la posicion final");
-                            Thread.Sleep(3000);
-                            break;
-                        }
+                        
 
                         if (key.Key == ConsoleKey.P && ActualToken.CooldownActive == 0 && vel == 1)
                         {
@@ -410,7 +407,7 @@ class GameManager
                                 else
                                 {
                                     ActualToken.PosFil = 1;
-                                    ActualToken.PosCol = 1;
+                                    ActualToken.PosCol = 0;
                                     System.Console.WriteLine("Has caido en una trampa y has vuelto al inicio");
                                     Thread.Sleep(3000);
                                     break;
@@ -446,12 +443,16 @@ class GameManager
                             }
                         }
                         PrintToken(players, i);
+                        if (WinCondition(players[i]))
+                        {
+                            System.Console.WriteLine($"Ha ganado el jugador {players[i].Name}");
+                            return;
+                        }
                     }
                     if (ActualToken.powers == PowersBank.Powers.SpeedPower && ActualToken.PowerActive)
                     {
                         ActualToken.Speed -= 3;
                     }
-                    
                     ActualToken.Speed = Speed;
                     ActualToken.PowerActive = false;
                 }
